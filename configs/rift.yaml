@@ -1,0 +1,40 @@
+# The evaluation protocol; change parameters (for ablations, personal purposes, etc) with --set
+task: hopper
+shift: gravity            # gravity | friction | morph_<part> 
+level: 0.5
+source_quality: medium    # D4RL -v2: medium | medium_replay | medium_expert
+target_quality: medium    # ODRL: medium | expert | medium_expert
+seed: 0
+device: cpu
+data_seed: 0            
+n_target: 5000          
+include_source: false     # false: lambda = 1 or IQL on B u B'; lambda = 1/2 or true: IQL on A u B u B'
+
+n_eval_episodes: 10
+eval_every: 10000
+log_every: 10000
+checkpoint_every: 50000
+cache_dir: results/cache  # the fitted VAE + field
+output_dir: results/rift
+
+iql:
+  n_steps: 1000000
+  batch_size: 256   
+  expectile: 0.7
+  beta: 3.0
+  discount: 0.99
+  actor_lr: 0.0003
+  critic_lr: 0.0003
+  target_batch_fraction: 0.5
+
+vae:
+  variant: bal+1p      
+  n_steps: 100000
+  latent_dim: 16
+  hidden_dim: 256
+  beta: 0.005
+
+transport:
+  quantile: 0.2        
+  max_pairs: 2000
+  n_batches: 8

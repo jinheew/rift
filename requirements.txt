@@ -1,0 +1,10 @@
+numpy==2.5.2
+scipy==1.18.1     
+torch==2.13.0
+h5py==3.16.0       
+POT==0.9.7.post1    
+gymnasium==1.0.0   
+mujoco==3.11.0
+imageio==2.37.4     
+gdown==6.1.0       
+PyYAML==6.0.3

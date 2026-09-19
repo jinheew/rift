@@ -1,0 +1,81 @@
+<mujoco model="ant">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.01" gravity="0 0 -4.905" integrator="RK4"/>
+  <default class="main">
+    <joint limited="true" armature="1" damping="1"/>
+    <geom conaffinity="0" friction="1 0.5 0.5" margin="0.01" density="5" rgba="0.8 0.6 0.4 1"/>
+  </default>
+  <custom>
+    <numeric name="init_qpos" size="15" data="0 0 0.55 1 0 0 0 0 1 0 -1 0 -1 0 1"/>
+  </custom>
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="1 1 1" rgb2="0 0 0" width="100" height="600"/>
+    <texture type="cube" name="texgeom" builtin="flat" mark="cross" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" markrgb="1 1 1" width="127" height="762"/>
+    <texture type="2d" name="texplane" builtin="checker" rgb1="0 0 0" rgb2="0.8 0.8 0.8" width="100" height="100"/>
+    <material name="MatPlane" texture="texplane" texrepeat="60 60" specular="1" shininess="1" reflectance="0.5"/>
+    <material name="geom" texture="texgeom" texuniform="true"/>
+  </asset>
+  <worldbody>
+    <geom name="floor" size="40 40 40" type="plane" conaffinity="1" material="MatPlane" rgba="0.8 0.9 0.8 1"/>
+    <light pos="0 0 1.3" dir="0 0 -1" directional="true" cutoff="100" exponent="1" diffuse="1 1 1" specular="0.1 0.1 0.1"/>
+    <body name="torso" pos="0 0 0.75" gravcomp="0">
+      <joint name="root" limited="false" type="free" margin="0.01" armature="0" damping="0"/>
+      <geom name="torso_geom" size="0.25"/>
+      <camera name="track" pos="0 -3 0.3" quat="0.707107 0.707107 0 0" mode="trackcom"/>
+      <body name="front_left_leg" pos="0 0 0" gravcomp="0">
+        <geom name="aux_1_geom" size="0.08 0.141421" pos="0.1 0.1 0" quat="0.707107 0.5 -0.5 0" type="capsule"/>
+        <body name="aux_1" pos="0.2 0.2 0" gravcomp="0">
+          <joint name="hip_1" pos="0 0 0" axis="0 0 1" range="-0.523599 0.523599"/>
+          <geom name="left_leg_geom" size="0.08 0.141421" pos="0.1 0.1 0" quat="0.707107 0.5 -0.5 0" type="capsule"/>
+          <body pos="0.2 0.2 0" gravcomp="0">
+            <joint name="ankle_1" pos="0 0 0" axis="-0.707107 0.707107 0" range="0.523599 1.22173"/>
+            <geom name="left_ankle_geom" size="0.08 0.282843" pos="0.2 0.2 0" quat="0.707107 0.5 -0.5 0" type="capsule"/>
+          </body>
+        </body>
+      </body>
+      <body name="front_right_leg" pos="0 0 0" gravcomp="0">
+        <geom name="aux_2_geom" size="0.08 0.141421" pos="-0.1 0.1 0" quat="0.707107 0.5 0.5 0" type="capsule"/>
+        <body name="aux_2" pos="-0.2 0.2 0" gravcomp="0">
+          <joint name="hip_2" pos="0 0 0" axis="0 0 1" range="-0.523599 0.523599"/>
+          <geom name="right_leg_geom" size="0.08 0.141421" pos="-0.1 0.1 0" quat="0.707107 0.5 0.5 0" type="capsule"/>
+          <body pos="-0.2 0.2 0" gravcomp="0">
+            <joint name="ankle_2" pos="0 0 0" axis="0.707107 0.707107 0" range="-1.22173 -0.523599"/>
+            <geom name="right_ankle_geom" size="0.08 0.282843" pos="-0.2 0.2 0" quat="0.707107 0.5 0.5 0" type="capsule"/>
+          </body>
+        </body>
+      </body>
+      <body name="back_leg" pos="0 0 0" gravcomp="0">
+        <geom name="aux_3_geom" size="0.08 0.141421" pos="-0.1 -0.1 0" quat="0.707107 -0.5 0.5 0" type="capsule"/>
+        <body name="aux_3" pos="-0.2 -0.2 0" gravcomp="0">
+          <joint name="hip_3" pos="0 0 0" axis="0 0 1" range="-0.523599 0.523599"/>
+          <geom name="back_leg_geom" size="0.08 0.141421" pos="-0.1 -0.1 0" quat="0.707107 -0.5 0.5 0" type="capsule"/>
+          <body pos="-0.2 -0.2 0" gravcomp="0">
+            <joint name="ankle_3" pos="0 0 0" axis="-0.707107 0.707107 0" range="-1.22173 -0.523599"/>
+            <geom name="third_ankle_geom" size="0.08 0.282843" pos="-0.2 -0.2 0" quat="0.707107 -0.5 0.5 0" type="capsule"/>
+          </body>
+        </body>
+      </body>
+      <body name="right_back_leg" pos="0 0 0" gravcomp="0">
+        <geom name="aux_4_geom" size="0.08 0.141421" pos="0.1 -0.1 0" quat="0.707107 -0.5 -0.5 0" type="capsule"/>
+        <body name="aux_4" pos="0.2 -0.2 0" gravcomp="0">
+          <joint name="hip_4" pos="0 0 0" axis="0 0 1" range="-0.523599 0.523599"/>
+          <geom name="rightback_leg_geom" size="0.08 0.141421" pos="0.1 -0.1 0" quat="0.707107 -0.5 -0.5 0" type="capsule"/>
+          <body pos="0.2 -0.2 0" gravcomp="0">
+            <joint name="ankle_4" pos="0 0 0" axis="0.707107 0.707107 0" range="0.523599 1.22173"/>
+            <geom name="fourth_ankle_geom" size="0.08 0.282843" pos="0.2 -0.2 0" quat="0.707107 -0.5 -0.5 0" type="capsule"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <actuator>
+    <general joint="hip_4" ctrlrange="-1 1" gear="150 0 0 0 0 0" actdim="0"/>
+    <general joint="ankle_4" ctrlrange="-1 1" gear="150 0 0 0 0 0" actdim="0"/>
+    <general joint="hip_1" ctrlrange="-1 1" gear="150 0 0 0 0 0" actdim="0"/>
+    <general joint="ankle_1" ctrlrange="-1 1" gear="150 0 0 0 0 0" actdim="0"/>
+    <general joint="hip_2" ctrlrange="-1 1" gear="150 0 0 0 0 0" actdim="0"/>
+    <general joint="ankle_2" ctrlrange="-1 1" gear="150 0 0 0 0 0" actdim="0"/>
+    <general joint="hip_3" ctrlrange="-1 1" gear="150 0 0 0 0 0" actdim="0"/>
+    <general joint="ankle_3" ctrlrange="-1 1" gear="150 0 0 0 0 0" actdim="0"/>
+  </actuator>
+</mujoco>
