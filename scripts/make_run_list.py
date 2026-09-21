@@ -3,6 +3,7 @@
     python scripts/make_run_list.py                          # 48 cells x 5 seeds x 2 arms = 480 runs
     python scripts/make_run_list.py --blocks gravity morph   # Tables 1 and 2 only
     python scripts/make_run_list.py --extra transport.quantile=0.1 --root results/q0.1   # an ablation
+    python scripts/make_run_list.py --extra use_rift=false --root results/iql            # the plain IQL baseline
 """
 from __future__ import annotations
 

@@ -56,6 +56,8 @@ python scripts/run.py \
 
 Use `include_source=true` for the source-included arm.
 
+Use `use_rift=false` for the plain IQL baseline. IQL is fit directly on the raw target data, or on raw source + target with `include_source=true`. We refer to ODRL (https://github.com/OffDynamicsRL/off-dynamics-rl/tree/main) for our hyperparameters and most of our code.
+
 Other shifts:
 
 ```text

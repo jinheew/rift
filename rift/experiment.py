@@ -33,6 +33,7 @@ class RunConfig:
     n_target: int | None = 5000
     # The training-set arm. False: IQL on D_B u D_B'. True: IQL on D_A u D_B u D_B'
     include_source: bool = False
+    use_rift: bool = True
 
     n_eval_episodes: int = 10
     eval_every: int = 10_000
@@ -56,8 +57,9 @@ class RunConfig:
 
     @property
     def run_name(self) -> str:
-        return "{}_{}_{}_{}_{}_rift-{}_seed{}".format(self.task, self.shift, self.level, self.source_quality,
-                                                     self.target_quality, self.arm, self.seed)
+        return "{}_{}_{}_{}_{}_{}-{}_seed{}".format(self.task, self.shift, self.level, self.source_quality,
+                                                   self.target_quality, "rift" if self.use_rift else "iql",
+                                                   self.arm, self.seed)
 
 
 def load_datasets(config: RunConfig, logger=print) -> tuple[Transitions, Transitions]:
@@ -98,21 +100,30 @@ def run(config: RunConfig, logger=print) -> dict:
     resolved.update({"iql": dataclasses.asdict(iql_config), "vae": dataclasses.asdict(vae_config),
                      "transport": dataclasses.asdict(transport_config)})
     tag = json.dumps(resolved, sort_keys=True, default=str)
+    observation_transform = None
 
-    artifacts = build_augmentation(source, target, config.task, vae_config=vae_config,
-                                   transport_config=transport_config, device=config.device,
-                                   logger=logger, cache=cache)
-    extra: dict[str, Any] = dict(artifacts.stats)
-    target_side = concatenate([target, artifacts.synthetic]) if len(artifacts.synthetic) else target
-    training = concatenate([source, target_side]) if config.include_source else target_side
-    training = artifacts.standardized(training)          # stage 4: the learner's coordinates
+    if config.use_rift:
+        artifacts = build_augmentation(source, target, config.task, vae_config=vae_config,
+                                       transport_config=transport_config, device=config.device,
+                                       logger=logger, cache=cache)
+        extra: dict[str, Any] = dict(artifacts.stats)
+        target_side = concatenate([target, artifacts.synthetic]) if len(artifacts.synthetic) else target
+        training = concatenate([source, target_side]) if config.include_source else target_side
+        training = artifacts.standardized(training)          # stage 4: the learner's coordinates
+        observation_transform = artifacts.observation_transform
+    else:
+        # plain IQL baseline
+        extra = {}
+        target_side = target
+        training = concatenate([source, target]) if config.include_source else target
+
     target_index = np.arange(len(training) - len(target_side), len(training))
     preprocess_seconds = time.time() - loaded
 
     def eval_fn(agent) -> dict[str, float]:
         return evaluate_policy(agent, config.task, config.shift, config.level,
                                n_episodes=config.n_eval_episodes, seed=config.seed,
-                               observation_transform=artifacts.observation_transform)
+                               observation_transform=observation_transform)
 
     logger("training IQL on {} transitions ({} target-side)".format(len(training), len(target_side)))
     agent = IQL(training.obs_dim, training.action_dim, iql_config, device=config.device)

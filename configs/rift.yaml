@@ -9,6 +9,7 @@ device: cpu
 data_seed: 0            
 n_target: 5000          
 include_source: false     # false: lambda = 1 or IQL on B u B'; lambda = 1/2 or true: IQL on A u B u B'
+use_rift: true            # false: plain IQL baseline on raw B (or raw A u B)
 
 n_eval_episodes: 10
 eval_every: 10000
